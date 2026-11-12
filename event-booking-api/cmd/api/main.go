@@ -1,35 +1,47 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"event-booking-api/config"
+	"event-booking-api/internal/database"
 )
 
 func main() {
-	// Create a Gin router with default middleware
+	// Load configuration.
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Connect to PostgreSQL.
+	db, err := database.Connect(cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	log.Println("Connected to PostgreSQL successfully!")
+
+	// Start Gin server.
 	router := gin.Default()
 
-	// Define a GET endpoint
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Welcome to Event Booking API",
 		})
 	})
 
-	// Health check endpoint
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"status": "running",
+			"status": "healthy",
 		})
 	})
 
-	router.GET("/about", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"name": "about page", "version": "v1.0.0",
-		})
-	})
-
-	// Start the server on port 8080
-	router.Run(":8080")
+	if err := router.Run(":8080"); err != nil {
+		log.Fatal(err)
+	}
 }

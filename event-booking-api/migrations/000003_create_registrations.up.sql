@@ -1,0 +1,8 @@
+CREATE TABLE registrations (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    event_id BIGINT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    registered_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE (user_id, event_id)
+);
