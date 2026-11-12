@@ -41,7 +41,7 @@ func main() {
 		})
 	})
 
-	if err := router.Run(":8080"); err != nil {
+	if err := router.Run(":8000"); err != nil {
 		log.Fatal(err)
 	}
 }
